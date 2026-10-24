@@ -138,15 +138,23 @@
 <h2 class="text-xl sm:text-2xl font-extrabold tracking-wider text-emerald-950 uppercase font-manrope" id="mainSectionTitle">INICIAR SESIÓN</h2>
 <p class="text-xs text-slate-400 mt-0.5 font-medium" id="mainSectionSubtitle">Ingresa tus credenciales para acceder</p>
 </div>
+@if ($errors->any())
+<div class="mb-5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium px-4 py-3 space-y-1">
+@foreach ($errors->all() as $error)
+<p>{{ $error }}</p>
+@endforeach
+</div>
+@endif
 <!-- ==================== VISTA: INICIAR SESIÓN ==================== -->
-<form class="space-y-6 transition-all duration-300" id="formLoginView">
+<form action="{{ route('login.store') }}" class="space-y-6 transition-all duration-300" id="formLoginView" method="POST">
+@csrf
 <!-- Email Input Minimalista Underline -->
 <div class="relative group">
 <div class="flex items-center border-b-2 border-slate-200 focus-within:border-emerald-600 pb-2 transition-colors duration-200">
 <span class="text-slate-400 group-focus-within:text-emerald-600 mr-3 transition-colors">
 <span class="material-symbols-outlined text-xl">account_circle</span>
 </span>
-<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="inputLoginEmail" placeholder="Correo electrónico" required="" type="email">
+<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="inputLoginEmail" name="email" value="{{ old('tab') === 'register' ? '' : old('email') }}" placeholder="Correo electrónico" required="" type="email">
 </div>
 </div>
 <!-- Password Input Minimalista Underline -->
@@ -155,7 +163,7 @@
 <span class="text-slate-400 group-focus-within:text-emerald-600 mr-3 transition-colors">
 <span class="material-symbols-outlined text-xl">lock</span>
 </span>
-<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="inputLoginPassword" placeholder="Contraseña" required="" type="password">
+<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm sm:text-base placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="inputLoginPassword" name="password" placeholder="Contraseña" required="" type="password">
 <button aria-label="Mostrar u ocultar contraseña" class="text-slate-400 hover:text-emerald-700 transition-colors pl-2" id="toggleLoginPasswordBtn" type="button">
 <span class="material-symbols-outlined text-lg" id="loginEyeIcon">visibility</span>
 </button>
@@ -171,14 +179,16 @@
 </div>
 </form>
 <!-- ==================== VISTA: REGISTRO / SIGN UP ==================== -->
-<form class="space-y-4 hidden transition-all duration-300" id="formRegisterView">
+<form action="{{ route('register.store') }}" class="space-y-4 hidden transition-all duration-300" id="formRegisterView" method="POST">
+@csrf
+<input name="tab" type="hidden" value="register">
 <!-- Nombre Completo Underline -->
 <div class="relative group">
 <div class="flex items-center border-b-2 border-slate-200 focus-within:border-emerald-600 pb-1.5 transition-colors duration-200">
 <span class="text-slate-400 group-focus-within:text-emerald-600 mr-3 transition-colors">
 <span class="material-symbols-outlined text-xl">badge</span>
 </span>
-<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regFullName" placeholder="Nombre Completo" required="" type="text">
+<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regFullName" name="name" value="{{ old('tab') === 'register' ? old('name') : '' }}" placeholder="Nombre Completo" required="" type="text">
 </div>
 </div>
 <!-- Email Underline -->
@@ -187,7 +197,7 @@
 <span class="text-slate-400 group-focus-within:text-emerald-600 mr-3 transition-colors">
 <span class="material-symbols-outlined text-xl">mail</span>
 </span>
-<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regEmail" placeholder="Correo Electrónico" required="" type="email">
+<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regEmail" name="email" value="{{ old('tab') === 'register' ? old('email') : '' }}" placeholder="Correo Electrónico" required="" type="email">
 <span class="hidden text-emerald-600" id="regEmailBadge">
 <span class="material-symbols-outlined text-base">check_circle</span>
 </span>
@@ -199,7 +209,7 @@
 <span class="text-slate-400 group-focus-within:text-emerald-600 mr-3 transition-colors">
 <span class="material-symbols-outlined text-xl">lock</span>
 </span>
-<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regPassword" placeholder="Contraseña (mínimo 8 caract.)" required="" type="password">
+<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regPassword" name="password" placeholder="Contraseña (mínimo 8 caract.)" required="" type="password">
 <button aria-label="Mostrar contraseña" class="text-slate-400 hover:text-emerald-700 transition-colors pl-2" id="toggleRegPwdBtn" type="button">
 <span class="material-symbols-outlined text-lg" id="regEyeIcon">visibility</span>
 </button>
@@ -211,7 +221,7 @@
 <span class="text-slate-400 group-focus-within:text-emerald-600 mr-3 transition-colors">
 <span class="material-symbols-outlined text-xl">check_circle</span>
 </span>
-<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regConfirmPassword" placeholder="Confirmar Contraseña" required="" type="password">
+<input class="w-full bg-transparent border-none p-0 text-slate-800 text-sm placeholder:text-slate-400 focus:ring-0 focus:outline-none font-medium" id="regConfirmPassword" name="password_confirmation" placeholder="Confirmar Contraseña" required="" type="password">
 </div>
 <div class="hidden text-[11px] mt-1 font-medium flex items-center gap-1 text-slate-500" id="regMatchNotice">
 <span class="material-symbols-outlined text-xs" id="regMatchIcon">info</span>
@@ -221,7 +231,7 @@
 <!-- Términos y Botón SIGN UP -->
 <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
 <label class="flex items-center gap-2 cursor-pointer text-left">
-<input class="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 border-slate-300" id="acceptTerms" required="" type="checkbox">
+<input class="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 border-slate-300" id="acceptTerms" name="terms" value="1" required="" type="checkbox">
 <span class="text-[11px] text-slate-500">Acepto los <a class="text-emerald-700 font-semibold hover:underline" href="#">términos de servicio</a></span>
 </label>
 <button class="w-full sm:w-auto px-9 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs sm:text-sm tracking-wider uppercase shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer" id="btnSubmitRegister" type="submit">
@@ -378,53 +388,40 @@
         }
       });
 
-      // Envío de Formulario Login
-      formLoginView.addEventListener('submit', function(e) {
-        e.preventDefault();
+      // Envío de Formulario Login (se envía de verdad al servidor)
+      formLoginView.addEventListener('submit', function() {
         const btn = document.getElementById('btnSubmitLogin');
-        const text = document.getElementById('loginBtnText');
+        document.getElementById('loginBtnText').textContent = 'VERIFICANDO...';
         const icon = document.getElementById('loginBtnIcon');
-
-        btn.disabled = true;
-        text.textContent = 'VERIFICANDO...';
         icon.textContent = 'sync';
         icon.classList.add('animate-spin');
-
-        setTimeout(function() {
-          btn.disabled = false;
-          text.textContent = 'LOGIN';
-          icon.textContent = 'arrow_forward';
-          icon.classList.remove('animate-spin');
-          alert('¡Bienvenido a my money! Has ingresado correctamente a tu gestor financiero.');
-        }, 1000);
+        setTimeout(function() { btn.disabled = true; }, 0);
       });
 
       // Envío de Formulario Registro
       formRegisterView.addEventListener('submit', function(e) {
-        e.preventDefault();
         if (regPassword.value !== regConfirmPassword.value) {
+          e.preventDefault();
           alert('Por favor verifica que ambas contraseñas coincidan.');
           return;
         }
-
         const btn = document.getElementById('btnSubmitRegister');
-        const text = document.getElementById('regBtnText');
+        document.getElementById('regBtnText').textContent = 'CREANDO...';
         const icon = document.getElementById('regBtnIcon');
-
-        btn.disabled = true;
-        text.textContent = 'CREANDO...';
         icon.textContent = 'sync';
         icon.classList.add('animate-spin');
-
-        setTimeout(function() {
-          btn.disabled = false;
-          text.textContent = 'REGISTRAR';
-          icon.textContent = 'person_add';
-          icon.classList.remove('animate-spin');
-          alert('¡Cuenta creada con éxito en my money! Revisa tu correo electrónico para confirmar tu registro.');
-          setLoginActive();
-        }, 1100);
+        setTimeout(function() { btn.disabled = true; }, 0);
       });
+
+      // Si llegas desde "Registrarse" en la página de inicio, abre la pestaña de registro
+      if (window.location.hash === '#registro') {
+        setRegisterActive();
+      }
+
+      // Si el registro falló, vuelve a mostrar la pestaña de registro
+      @if (old('tab') === 'register')
+      setRegisterActive();
+      @endif
 
     })();
   </script>

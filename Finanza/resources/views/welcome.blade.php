@@ -54,10 +54,10 @@
 
       <!-- Right CTAs -->
       <div class="flex items-center gap-4">
-        <a href="#login" class="text-sm font-semibold text-slate-700 hover:text-brand-600 px-3 py-2 transition-colors">
+        <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-700 hover:text-brand-600 px-3 py-2 transition-colors">
           Iniciar Sesión
         </a>
-        <a href="#registro" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow-md shadow-brand-600/20 hover:shadow-lg hover:shadow-brand-600/30 transition-all duration-200">
+        <a href="{{ route('login') }}#registro" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow-md shadow-brand-600/20 hover:shadow-lg hover:shadow-brand-600/30 transition-all duration-200">
           <span class="">Registrarse</span>
         </a>
       </div>
@@ -97,7 +97,7 @@
 
           <!-- CTAs Group -->
           <div class="flex flex-wrap items-center gap-4 pt-2 w-full sm:w-auto">
-            <a href="#registro" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/25 hover:shadow-xl hover:shadow-brand-600/35 transition-all duration-200 transform hover:-translate-y-0.5">
+            <a href="{{ route('login') }}#registro" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-600/25 hover:shadow-xl hover:shadow-brand-600/35 transition-all duration-200 transform hover:-translate-y-0.5">
               <span class="">Iniciar Sesión</span>
               <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </a>
@@ -466,7 +466,7 @@
           </p>
 
           <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <a href="#registro" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-50 text-brand-800 font-extrabold text-base rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-0.5">
+            <a href="{{ route('login') }}#registro" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-50 text-brand-800 font-extrabold text-base rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-0.5">
               <span class="">Crear Cuenta&nbsp;</span>
               <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
             </a>

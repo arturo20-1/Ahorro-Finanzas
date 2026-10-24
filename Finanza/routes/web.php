@@ -13,16 +13,27 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
-Route::get('/login', [AuthController::class, 'index'])->name('login');
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/transacciones', [TransactionController::class, 'index'])->name('transactions.index');
-Route::get('/presupuestos', [BudgetController::class, 'index'])->name('budgets.index');
-Route::get('/metas', [GoalController::class, 'index'])->name('goals.index');
-Route::get('/reportes', [AnalyticsController::class, 'index'])->name('analytics.index');
-Route::get('/cuentas', [AccountController::class, 'index'])->name('accounts.index');
-Route::get('/configuracion', [SettingsController::class, 'index'])->name('settings.index');
+// Solo para visitantes (si ya iniciaste sesión te manda al dashboard)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+    Route::post('/registro', [AuthController::class, 'register'])->name('register.store');
+});
 
-Route::prefix('admin')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::post('/categorias', fn () => back())->name('admin.categories.store');
+// Solo para usuarios con sesión iniciada
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/transacciones', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/presupuestos', [BudgetController::class, 'index'])->name('budgets.index');
+    Route::get('/metas', [GoalController::class, 'index'])->name('goals.index');
+    Route::get('/reportes', [AnalyticsController::class, 'index'])->name('analytics.index');
+    Route::get('/cuentas', [AccountController::class, 'index'])->name('accounts.index');
+    Route::get('/configuracion', [SettingsController::class, 'index'])->name('settings.index');
+
+    Route::prefix('admin')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::post('/categorias', fn () => back())->name('admin.categories.store');
+    });
 });

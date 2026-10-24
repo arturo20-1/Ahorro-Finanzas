@@ -8,8 +8,8 @@
 <header class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-md mb-space-lg">
 <div class="flex flex-col">
 <div class="flex items-center gap-space-xs">
-<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">¡Hola, Arturo!</h1>
-<span class="text-[28px] animate-bounce">👋</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">¡Hola, {{ \Illuminate\Support\Str::before(auth()->user()->name, ' ') }}!</h1>
+<span class="text-[28px] animate-bounce"></span>
 </div>
 <p class="font-body-md text-body-md text-on-surface-variant mt-1">
         Aquí está el balance y rendimiento financiero de tu patrimonio en tiempo real.
