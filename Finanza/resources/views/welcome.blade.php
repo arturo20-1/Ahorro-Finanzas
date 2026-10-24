@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="es" style=""><head>
+<link href="{{ asset('images/logo.png') }}" rel="icon" type="image/png">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Página de Inicio - my money Gestor Inteligente de Finanzas</title>
@@ -37,7 +38,7 @@
     <div class="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between gap-6">
       <!-- Logo Brand -->
       <a href="#" class="flex items-center gap-3 group">
-        <img src="https://lh3.googleusercontent.com/aida/AEtjO1UMIVvHa-J6LdhLht6FdmHa9rdLtbLRWyR4nCx3uJU-I_futDGPR0gM_Y1zk8L7-J-9LSeef8HMwIBjmDbzyDYr4EC75knTpna_fFPN1wasnpi4FSKbUvnLqb3LISrBqsO8L7UxBZ4b4mD68vOLTluqXyPbWvqy2T5N13suVC5XxPfcME672Sk6LplWWJc8LKLhd1ilwU3PyFX8cI2MOtCCT59rze3RD_YW3XTGwX05ag" alt="my money Logo" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform">
+        <img src="{{ asset('images/logo.png') }}" alt="my money Logo" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform">
         <div class="flex flex-col">
           <span class="text-xl font-extrabold text-slate-900 tracking-tight leading-tight">Gestor Financiero</span>
           <span class="text-[11px] font-medium text-slate-500 tracking-wide">Finanzas Personales</span>
@@ -454,7 +455,7 @@
 
         <div class="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center">
           <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 border border-white/20 shadow-inner">
-            <img src="https://lh3.googleusercontent.com/aida/AEtjO1UMIVvHa-J6LdhLht6FdmHa9rdLtbLRWyR4nCx3uJU-I_futDGPR0gM_Y1zk8L7-J-9LSeef8HMwIBjmDbzyDYr4EC75knTpna_fFPN1wasnpi4FSKbUvnLqb3LISrBqsO8L7UxBZ4b4mD68vOLTluqXyPbWvqy2T5N13suVC5XxPfcME672Sk6LplWWJc8LKLhd1ilwU3PyFX8cI2MOtCCT59rze3RD_YW3XTGwX05ag" alt="my money" class="w-10 h-10 object-contain drop-shadow">
+            <img src="{{ asset('images/logo.png') }}" alt="my money" class="w-10 h-10 object-contain drop-shadow">
           </div>
 
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">

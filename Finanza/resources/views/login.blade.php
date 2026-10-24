@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="es" style=""><head>
+<link href="{{ asset('images/logo.png') }}" rel="icon" type="image/png">
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>my money - Finanzas Personales y Metas de Ahorro</title>
@@ -93,10 +94,10 @@
 <div class="facet-layer-1"></div>
 <div class="facet-layer-2"></div>
 <div class="facet-layer-3"></div>
-<!-- Encabezado con Logo Oficial de my money https://lh3.googleusercontent.com/aida/AEtjO1VZSZnvrybuGL91b7myTtOgAkIrJM6m-hJwku1qINiVecXdKmMWGMtGDlJ9x7a4OriQMfb9YpoPducCSOlp7qy2nBCr_tFsGqBxCX4V3JnuYkqUsg5wKsWUt8sgYSku1xypXeIPosjzlsnByhOV7MNMPryfsXbwJOpZ_uLtE-BB6jgLQqHXc72mVU144z12IQ-FxaWGSsnP8xuM7O4Wz2Ft5FY6Ws5rD4kzqAQBFHGicB-tfOgZPL8K8yRa -->
+<!-- Encabezado con Logo Oficial de my money  -->
 <div class="relative z-10 flex items-center gap-3">
 <div class="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md p-1.5 shadow-inner border border-white/20 flex items-center justify-center flex-shrink-0">
-<img alt="my money logo oficial" class="w-full h-full object-contain filter drop-shadow" src="https://lh3.googleusercontent.com/aida/AEtjO1VZSZnvrybuGL91b7myTtOgAkIrJM6m-hJwku1qINiVecXdKmMWGMtGDlJ9x7a4OriQMfb9YpoPducCSOlp7qy2nBCr_tFsGqBxCX4V3JnuYkqUsg5wKsWUt8sgYSku1xypXeIPosjzlsnByhOV7MNMPryfsXbwJOpZ_uLtE-BB6jgLQqHXc72mVU144z12IQ-FxaWGSsnP8xuM7O4Wz2Ft5FY6Ws5rD4kzqAQBFHGicB-tfOgZPL8K8yRa">
+<img alt="my money logo oficial" class="w-full h-full object-contain filter drop-shadow" src="{{ asset('images/logo.png') }}">
 </div>
 <div>
 <h1 class="text-xl font-extrabold tracking-tight text-white leading-tight font-manrope">Finanzas</h1>
