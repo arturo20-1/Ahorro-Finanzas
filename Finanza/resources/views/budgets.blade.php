@@ -548,18 +548,18 @@
 <!-- Banner / Widget Inferior de Asistente Financiero IA -->
 <section class="bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-3xl p-space-xl shadow-xl shadow-primary/10 relative overflow-hidden">
 <!-- Ambient Decor Shapes -->
-<div class="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+<div class="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-on-primary/10 blur-2xl pointer-events-none"></div>
 <div class="absolute top-0 right-1/4 w-32 h-32 rounded-full bg-primary-fixed/10 blur-xl pointer-events-none"></div>
 <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg">
 <div class="flex items-start gap-space-md max-w-3xl">
-<div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
-<span class="material-symbols-outlined text-white text-[32px]">auto_awesome</span>
+<div class="w-14 h-14 rounded-2xl bg-on-primary/20 backdrop-blur-md flex items-center justify-center shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-on-primary text-[32px]">auto_awesome</span>
 </div>
 <div>
-<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/20 text-white font-label-sm text-label-sm mb-2 backdrop-blur-sm">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-on-primary/20 text-on-primary font-label-sm text-label-sm mb-2 backdrop-blur-sm">
 <span>Diagnóstico Predictivo de Cierre de Mayo</span>
 </div>
-<h2 class="font-headline-sm text-headline-sm text-white font-bold leading-tight">
+<h2 class="font-headline-sm text-headline-sm text-on-primary font-bold leading-tight">
             Proyección de Ahorro: +$380.00 de excedente no gastado
           </h2>
 <p class="font-body-md text-body-md text-on-primary/90 mt-1 leading-relaxed">
@@ -572,7 +572,7 @@
 <span class="material-symbols-outlined text-[20px]">sync_alt</span>
 <span>Programar transferencia automática</span>
 </button>
-<button class="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white px-space-md py-3 rounded-xl font-label-lg text-label-lg transition-all text-center">
+<button class="w-full sm:w-auto bg-on-primary/10 hover:bg-on-primary/20 text-on-primary px-space-md py-3 rounded-xl font-label-lg text-label-lg transition-all text-center">
           Descartar por ahora
         </button>
 </div>
