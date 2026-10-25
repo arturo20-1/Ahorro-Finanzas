@@ -33,7 +33,15 @@ class AdminAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.dashboard'));
+        // Solo vuelve a una dirección guardada si pertenece al panel de administrador
+        $destino = $request->session()->pull('url.intended');
+        $ruta = (string) parse_url((string) $destino, PHP_URL_PATH);
+
+        if ($destino && str_starts_with($ruta, '/admin')) {
+            return redirect()->to($destino);
+        }
+
+        return redirect()->route('admin.dashboard');
     }
 
     public function logout(Request $request): RedirectResponse

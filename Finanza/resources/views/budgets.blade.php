@@ -475,19 +475,6 @@
 </button>
 </div>
 </div>
-<!-- Tarjeta para Agregar Nueva Categoría -->
-<div class="budget-card bg-surface-container-low/40 rounded-2xl p-space-lg flex flex-col items-center justify-center text-center hover:bg-surface-container-low hover:border-primary/40 transition-all cursor-pointer group min-h-[340px]" data-name="nueva categoria" data-status="all">
-<div class="w-16 h-16 rounded-2xl bg-surface-container-lowest text-primary shadow-sm flex items-center justify-center mb-space-md group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-[32px]">add</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-1">Añadir Nueva Categoría</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant max-w-[200px] mb-space-lg leading-relaxed">
-        Fija límites preventivos a tus gastos hormiga, vacaciones o compras especiales.
-      </p>
-<span class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-bold group-hover:underline">
-        Comenzar configuración <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</span>
-</div>
 </div>
 <!-- Vista Alternativa en Tabla (Oculta por defecto para Toggle) -->
 <div class="hidden bg-surface-container-lowest rounded-2xl shadow-sm p-space-lg mb-space-xl overflow-x-auto" id="budgetsTableContainer">

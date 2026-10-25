@@ -36,7 +36,16 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        // La sesión es compartida con el panel de administrador: si antes se intentó abrir
+        // /admin, esa dirección queda guardada y mandaría al cliente al login del admin.
+        $destino = $request->session()->pull('url.intended');
+        $ruta = (string) parse_url((string) $destino, PHP_URL_PATH);
+
+        if ($destino && ! str_starts_with($ruta, '/admin')) {
+            return redirect()->to($destino);
+        }
+
+        return redirect()->route('dashboard');
     }
 
     public function register(Request $request): RedirectResponse
