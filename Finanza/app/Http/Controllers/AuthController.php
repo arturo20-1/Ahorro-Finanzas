@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -61,6 +62,9 @@ class AuthController extends Controller
             'email' => $datos['email'],
             'password' => $datos['password'], // se cifra solo (cast "hashed" del modelo)
         ]);
+
+        // El usuario nuevo empieza usando todas las categorías del catálogo global
+        $usuario->categories()->attach(Category::pluck('id')->all());
 
         Auth::login($usuario);
         $request->session()->regenerate();
