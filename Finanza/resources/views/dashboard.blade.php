@@ -53,17 +53,17 @@
 </div>
 </div>
 <div>
-<div class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">$24,580.00 <span class="font-label-md text-label-md text-on-surface-variant font-normal">USD</span></div>
+<div class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">${{ number_format($balance, 2) }} <span class="font-label-md text-label-md text-on-surface-variant font-normal">USD</span></div>
 <div class="flex items-center gap-space-xs mt-space-xs">
 <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-<span class="material-symbols-outlined text-[14px]">trending_up</span> +12.4%
+<span class="material-symbols-outlined text-[14px]">{{ $neto >= 0 ? 'trending_up' : 'trending_down' }}</span> {{ $neto >= 0 ? '+' : '-' }}${{ number_format(abs($neto), 2) }}
           </span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">vs mes anterior</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">flujo neto del mes</span>
 </div>
 </div>
 <div class="mt-space-md pt-space-xs flex items-center gap-space-xs text-on-surface-variant">
 <span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
-<span class="font-label-sm text-label-sm">3 cuentas sincronizadas</span>
+<span class="font-label-sm text-label-sm">{{ $nCuentas }} {{ $nCuentas === 1 ? 'cuenta registrada' : 'cuentas registradas' }}</span>
 </div>
 </div>
 <!-- Tarjeta 2: Ingresos del Mes -->
@@ -75,17 +75,17 @@
 </div>
 </div>
 <div>
-<div class="font-headline-lg text-headline-lg text-primary font-extrabold tracking-tight">$6,450.00 <span class="font-label-md text-label-md text-on-surface-variant font-normal">USD</span></div>
+<div class="font-headline-lg text-headline-lg text-primary font-extrabold tracking-tight">${{ number_format($ingresos, 2) }} <span class="font-label-md text-label-md text-on-surface-variant font-normal">USD</span></div>
 <div class="flex items-center gap-space-xs mt-space-xs">
 <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-<span class="material-symbols-outlined text-[14px]">north_east</span> +8.2%
+<span class="material-symbols-outlined text-[14px]">{{ $iconoIngresos }}</span> {{ $textoCambioIngresos }}
           </span>
 <span class="font-label-sm text-label-sm text-on-surface-variant">vs mes anterior</span>
 </div>
 </div>
 <div class="mt-space-md pt-space-xs flex items-center gap-space-xs text-on-surface-variant">
 <span class="material-symbols-outlined text-[16px] text-primary">receipt_long</span>
-<span class="font-label-sm text-label-sm">12 transacciones registradas</span>
+<span class="font-label-sm text-label-sm">{{ $nIngresos }} {{ $nIngresos === 1 ? 'ingreso registrado' : 'ingresos registrados' }} este mes</span>
 </div>
 </div>
 <!-- Tarjeta 3: Gastos del Mes -->
@@ -97,17 +97,17 @@
 </div>
 </div>
 <div>
-<div class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">$2,890.50 <span class="font-label-md text-label-md text-on-surface-variant font-normal">USD</span></div>
+<div class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">${{ number_format($gastos, 2) }} <span class="font-label-md text-label-md text-on-surface-variant font-normal">USD</span></div>
 <div class="flex items-center gap-space-xs mt-space-xs">
 <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold">
-<span class="material-symbols-outlined text-[14px]">south</span> -3.1%
+<span class="material-symbols-outlined text-[14px]">{{ $iconoGastos }}</span> {{ $textoCambioGastos }}
           </span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">menos gasto vs abril</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">vs mes anterior</span>
 </div>
 </div>
 <div class="mt-space-md pt-space-xs flex items-center gap-space-xs text-secondary">
 <span class="material-symbols-outlined text-[16px]">check_circle</span>
-<span class="font-label-sm text-label-sm font-semibold">En control de presupuesto</span>
+<span class="font-label-sm text-label-sm font-semibold">{{ $gastos <= $ingresos ? 'Gastos dentro de tus ingresos' : 'Gastos por encima de tus ingresos' }}</span>
 </div>
 </div>
 <!-- Tarjeta 4: Capacidad y Tasa de Ahorro -->
@@ -120,14 +120,14 @@
 </div>
 <div class="flex items-baseline justify-between">
 <div>
-<div class="font-headline-lg text-headline-lg text-tertiary font-extrabold tracking-tight">55.2%</div>
-<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">$3,559.50 disponibles p/ ahorro</p>
+<div class="font-headline-lg text-headline-lg text-tertiary font-extrabold tracking-tight">{{ number_format($tasa, 1) }}%</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">{{ $neto >= 0 ? '' : '-' }}${{ number_format(abs($neto), 2) }} {{ $neto >= 0 ? 'disponibles p/ ahorro' : 'de déficit este mes' }}</p>
 </div>
 <!-- Progress Circular Radial Mini SVG -->
 <div class="relative w-12 h-12 flex items-center justify-center">
 <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
 <path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
-<path class="text-tertiary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="55.2, 100" stroke-linecap="round" stroke-width="3.5"></path>
+<path class="text-tertiary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="{{ $tasaCirculo }}, 100" stroke-linecap="round" stroke-width="3.5"></path>
 </svg>
 <span class="material-symbols-outlined text-[16px] text-tertiary absolute">star</span>
 </div>
@@ -135,7 +135,7 @@
 <div class="mt-space-md pt-space-xs flex items-center justify-between">
 <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary font-bold">
 <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-          Salud Excelente ✨
+          {{ $saludTasa }}
         </span>
 <span class="font-label-sm text-label-sm text-on-surface-variant">Objetivo: 50%</span>
 </div>
@@ -364,9 +364,9 @@
 <div class="flex flex-wrap items-center gap-space-xs">
 <!-- Filtros Rápidos -->
 <div class="flex bg-surface-container-low p-1 rounded-xl font-label-md text-label-md">
-<button class="px-space-sm py-1 rounded-lg bg-surface-container-lowest text-on-surface font-bold shadow-sm" type="button">Todas</button>
-<button class="px-space-sm py-1 rounded-lg text-on-surface-variant hover:text-on-surface" type="button">Ingresos</button>
-<button class="px-space-sm py-1 rounded-lg text-on-surface-variant hover:text-on-surface" type="button">Gastos</button>
+<a class="px-space-sm py-1 rounded-lg bg-surface-container-lowest text-on-surface font-bold shadow-sm" href="{{ route('transactions.index') }}">Todas</a>
+<a class="px-space-sm py-1 rounded-lg text-on-surface-variant hover:text-on-surface" href="{{ route('transactions.index', ['type' => 'income']) }}">Ingresos</a>
+<a class="px-space-sm py-1 rounded-lg text-on-surface-variant hover:text-on-surface" href="{{ route('transactions.index', ['type' => 'expense']) }}">Gastos</a>
 </div>
 <button class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface" type="button">
 <span class="material-symbols-outlined text-[18px]">filter_list</span>
@@ -381,188 +381,45 @@
 <th class="py-3 px-4 rounded-l-xl">Concepto / Comercio</th>
 <th class="py-3 px-4">Fecha</th>
 <th class="py-3 px-4">Categoría</th>
-<th class="py-3 px-4">Estado</th>
 <th class="py-3 px-4 text-right rounded-r-xl">Monto (USD)</th>
 </tr>
 </thead>
 <tbody class="divide-y divide-transparent">
-<!-- Fila 1: Sueldo -->
+@forelse ($recientes as $tx)
 <tr class="hover:bg-surface-container-low/50 transition-colors">
 <td class="py-3.5 px-4">
 <div class="flex items-center gap-space-sm">
-<div class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-[20px]">work</span>
+<div class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0" @if ($tx->category->color) style="background-color: {{ $tx->category->color }}22; color: {{ $tx->category->color }};" @endif>
+<span class="material-symbols-outlined text-[20px]">{{ $tx->category->icon ?: 'category' }}</span>
 </div>
 <div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface font-bold">Sueldo Corporativo Tech Corp</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Depósito directo de nómina</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">{{ $tx->description }}</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">{{ $tx->account->name }}</span>
 </div>
 </div>
 </td>
-<td class="py-3.5 px-4 font-body-sm text-body-sm text-on-surface-variant">28 May 2025</td>
+<td class="py-3.5 px-4 font-body-sm text-body-sm text-on-surface-variant">{{ $tx->transaction_date->locale('es')->translatedFormat('d M Y') }}</td>
 <td class="py-3.5 px-4">
 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold">
-                Nómina
-              </span>
-</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Completado
-              </span>
+{{ $tx->category->name }}
+</span>
 </td>
 <td class="py-3.5 px-4 text-right">
-<span class="font-headline-sm text-headline-sm font-extrabold text-primary">+$4,800.00</span>
+<span class="font-headline-sm text-headline-sm font-extrabold {{ $tx->type === 'income' ? 'text-primary' : 'text-on-surface' }}">{{ $tx->type === 'income' ? '+' : '-' }}${{ number_format($tx->amount, 2) }}</span>
 </td>
 </tr>
-<!-- Fila 2: Whole Foods -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-space-sm">
-<div class="w-10 h-10 rounded-xl bg-surface-container text-on-surface flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-[20px]">shopping_cart</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface font-bold">Supermercado Whole Foods</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Tarjeta Débito Platinum ••4921</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4 font-body-sm text-body-sm text-on-surface-variant">27 May 2025</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold">
-                Alimentación
-              </span>
-</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Completado
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<span class="font-headline-sm text-headline-sm font-bold text-on-surface">-$142.30</span>
-</td>
-</tr>
-<!-- Fila 3: Alquiler -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-space-sm">
-<div class="w-10 h-10 rounded-xl bg-surface-container text-on-surface flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-[20px]">home</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface font-bold">Pago Alquiler Apartamento</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Transferencia ACH programada</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4 font-body-sm text-body-sm text-on-surface-variant">25 May 2025</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold">
-                Vivienda
-              </span>
-</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Completado
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<span class="font-headline-sm text-headline-sm font-bold text-on-surface">-$950.00</span>
-</td>
-</tr>
-<!-- Fila 4: Freelance -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-space-sm">
-<div class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-[20px]">laptop_mac</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface font-bold">Proyecto Consultoría Freelance</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Stripe Invoice #INV-8821</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4 font-body-sm text-body-sm text-on-surface-variant">24 May 2025</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold">
-                Ingreso Extra
-              </span>
-</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Completado
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<span class="font-headline-sm text-headline-sm font-extrabold text-primary">+$1,650.00</span>
-</td>
-</tr>
-<!-- Fila 5: Restaurante -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-space-sm">
-<div class="w-10 h-10 rounded-xl bg-surface-container text-on-surface flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-[20px]">restaurant</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface font-bold">Restaurante Bistro Gourmet</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Cena fin de semana</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4 font-body-sm text-body-sm text-on-surface-variant">22 May 2025</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold">
-                Ocio
-              </span>
-</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-bold">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Completado
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<span class="font-headline-sm text-headline-sm font-bold text-on-surface">-$78.50</span>
-</td>
-</tr>
-<!-- Fila 6: SaaS Cloud (Pendiente) -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-space-sm">
-<div class="w-10 h-10 rounded-xl bg-surface-container text-on-surface flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-[20px]">cloud_sync</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-lg text-label-lg text-on-surface font-bold">Suscripción SaaS Cloud</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Cobro recurrente mensual</span>
-</div>
-</div>
-</td>
-<td class="py-3.5 px-4 font-body-sm text-body-sm text-on-surface-variant">20 May 2025</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm font-semibold">
-                Servicios
-              </span>
-</td>
-<td class="py-3.5 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm font-bold">
-<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Pendiente
-              </span>
-</td>
-<td class="py-3.5 px-4 text-right">
-<span class="font-headline-sm text-headline-sm font-bold text-on-surface">-$29.99</span>
-</td>
-</tr>
+@empty
+<tr><td class="py-10 px-4 text-center font-body-sm text-body-sm text-on-surface-variant" colspan="4">Aún no tienes movimientos. Registra el primero desde "Registrar Transacción".</td></tr>
+@endforelse
 </tbody>
 </table>
 </div>
 <!-- Pie de Tabla & Enlace Completo -->
 <div class="mt-space-md pt-space-sm flex flex-col sm:flex-row items-center justify-between gap-space-sm">
 <div class="font-label-md text-label-md text-on-surface-variant">
-        Mostrando 6 de 142 transacciones registradas este mes
+        Mostrando {{ $recientes->count() }} de {{ $totalMes }} transacciones registradas este mes
       </div>
-<a class="inline-flex items-center gap-1 font-label-lg text-label-lg font-bold text-primary hover:text-primary-container group transition-colors" href="#">
+<a class="inline-flex items-center gap-1 font-label-lg text-label-lg font-bold text-primary hover:text-primary-container group transition-colors" href="{{ route('transactions.index') }}">
         Ver todas las transacciones
         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
 </a>

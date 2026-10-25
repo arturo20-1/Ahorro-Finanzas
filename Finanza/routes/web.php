@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Middleware\RestrictAdminIp;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -26,6 +27,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/transacciones', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::post('/transacciones', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::post('/transacciones', [TransactionController::class, 'store'])->name('transactions.store');
     Route::get('/presupuestos', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('/metas', [GoalController::class, 'index'])->name('goals.index');
     Route::get('/reportes', [AnalyticsController::class, 'index'])->name('analytics.index');
@@ -33,8 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/configuracion', [SettingsController::class, 'index'])->name('settings.index');
 });
 
-// ---------- Administrador (acceso separado, guard "admin") ----------
-Route::prefix('admin')->name('admin.')->group(function () {
+// ---------- Administrador (guard "admin" + solo desde IPs permitidas) ----------
+Route::prefix('admin')->name('admin.')->middleware(RestrictAdminIp::class)->group(function () {
     Route::middleware('guest:admin')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
         Route::post('/login', [AdminAuthController::class, 'login'])->name('login.store');
