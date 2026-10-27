@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+@include('partials.theme-head')
+
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Acceso administrador | Finanzas &amp; Ahorro</title>
 <link href="{{ asset('images/logo.png') }}" rel="icon" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-emerald-50 flex items-center justify-center p-6 font-sans text-slate-800">
+@include('partials.theme-toggle', ['flotante' => true])
 <main class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-emerald-100 p-8">
 <div class="flex items-center gap-3 mb-6">
 <img alt="Logo" class="h-12 w-auto object-contain" src="{{ asset('images/logo.png') }}">
@@ -29,7 +33,7 @@
 @csrf
 <div>
 <label class="block text-sm font-medium mb-1" for="email">Correo electrónico</label>
-<input autocomplete="email" autofocus class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500" id="email" name="email" required type="email" value="{{ old('email') }}">
+<input autocomplete="email" autofocus class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500" id="email" name="email" required type="email" value="{{ old('email', app()->environment('local') ? 'admin@example.com' : '') }}">
 </div>
 <div>
 <label class="block text-sm font-medium mb-1" for="password">Contraseña</label>

@@ -187,20 +187,11 @@ class TransactionController extends Controller
     }
 
     /**
-     * Temporal: mientras no existan las pantallas para crear cuentas y elegir categorías,
-     * se asegura de que el usuario tenga una cuenta y categorías para poder registrar movimientos.
+     * Temporal: mientras no exista la pantalla para elegir categorías, se asignan
+     * las del catálogo al usuario que todavía no tiene ninguna.
      */
     private function prepararUsuario($usuario): void
     {
-        if ($usuario->accounts()->doesntExist()) {
-            $usuario->accounts()->create([
-                'name' => 'Efectivo',
-                'type' => 'cash',
-                'balance' => 0,
-                'currency' => 'USD',
-            ]);
-        }
-
         if ($usuario->categories()->doesntExist()) {
             $usuario->categories()->attach(Category::pluck('id')->all());
         }

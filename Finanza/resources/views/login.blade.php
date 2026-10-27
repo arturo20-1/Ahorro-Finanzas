@@ -1,4 +1,6 @@
 <!DOCTYPE html><html lang="es" style=""><head>
+@include('partials.theme-head')
+
 <link href="{{ asset('images/logo.png') }}" rel="icon" type="image/png">
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -82,6 +84,7 @@
   </style>
 </head>
 <body class="bg-[#e9eff1] text-slate-800 antialiased selection:bg-emerald-600 selection:text-white min-h-screen flex items-center justify-center p-3 sm:p-6 lg:p-10 font-sans relative overflow-x-hidden">
+@include('partials.theme-toggle', ['flotante' => true])
 <!-- Fondos sutiles de ambiente -->
 <div class="fixed -top-40 -right-40 w-[30rem] h-[30rem] bg-emerald-200/50 rounded-full blur-3xl pointer-events-none"></div>
 <div class="fixed -bottom-40 -left-40 w-[30rem] h-[30rem] bg-teal-200/50 rounded-full blur-3xl pointer-events-none"></div>
@@ -428,4 +431,9 @@
   </script>
 
 
+{{-- TEMPORAL: acceso rápido al administrador. Solo se muestra en entorno local; borra este bloque cuando ya no lo necesites. --}}
+@env('local')
+<a href="{{ route('admin.login') }}" class="fixed bottom-4 right-4 z-[60] inline-flex items-center gap-2 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 shadow-lg backdrop-blur transition-colors" title="Acceso temporal (solo entorno local)"><span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>Entrar como administrador</a>
+@endenv
+{{-- FIN TEMPORAL --}}
 </body></html>

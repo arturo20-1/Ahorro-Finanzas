@@ -16,6 +16,21 @@ class Account extends Model
     use HasFactory;
 
     /**
+     * Tipos de cuenta: nombre para mostrar, ícono y grupo (para los filtros de la pantalla).
+     */
+    public const TYPES = [
+        'checking' => ['label' => 'Cuenta corriente', 'icon' => 'account_balance', 'group' => 'bank'],
+        'savings' => ['label' => 'Ahorros', 'icon' => 'savings', 'group' => 'bank'],
+        'cash' => ['label' => 'Efectivo', 'icon' => 'payments', 'group' => 'cash'],
+        'credit' => ['label' => 'Tarjeta de crédito', 'icon' => 'credit_card', 'group' => 'credit'],
+    ];
+
+    /**
+     * Monedas disponibles al crear una cuenta.
+     */
+    public const CURRENCIES = ['USD', 'MXN', 'EUR', 'COP', 'PEN', 'ARS', 'CLP'];
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

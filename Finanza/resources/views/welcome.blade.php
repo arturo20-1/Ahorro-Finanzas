@@ -1,4 +1,6 @@
 <!DOCTYPE html><html lang="es" style=""><head>
+@include('partials.theme-head')
+
 <link href="{{ asset('images/logo.png') }}" rel="icon" type="image/png">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,10 +51,13 @@
       <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
         <a href="#caracteristicas" class="hover:text-brand-600 transition-colors">Características</a>
         <a href="#como-funciona" class="hover:text-brand-600 transition-colors">Cómo funciona</a>
+        <a href="#metas" class="hover:text-brand-600 transition-colors">Metas de Ahorro</a>
+        <a href="#seguridad" class="hover:text-brand-600 transition-colors">Seguridad</a>
       </nav>
 
       <!-- Right CTAs -->
       <div class="flex items-center gap-4">
+        @include('partials.theme-toggle')
         <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-700 hover:text-brand-600 px-3 py-2 transition-colors">
           Iniciar Sesión
         </a>
@@ -544,4 +549,9 @@
 
 
 
+{{-- TEMPORAL: acceso rápido al administrador. Solo se muestra en entorno local; borra este bloque cuando ya no lo necesites. --}}
+@env('local')
+<a href="{{ route('admin.login') }}" class="fixed bottom-4 right-4 z-[60] inline-flex items-center gap-2 rounded-full bg-slate-900/90 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 shadow-lg backdrop-blur transition-colors" title="Acceso temporal (solo entorno local)"><span class="material-symbols-outlined text-[16px]">admin_panel_settings</span>Entrar como administrador</a>
+@endenv
+{{-- FIN TEMPORAL --}}
 </body></html>

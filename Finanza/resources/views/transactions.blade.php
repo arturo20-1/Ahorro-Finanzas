@@ -286,6 +286,9 @@ Sin transacciones para mostrar
 @endforeach
 </div>
 @endif
+@if ($cuentas->isEmpty())
+<div class="rounded-xl bg-tertiary-container/30 text-on-surface px-space-md py-space-sm font-label-md text-label-md flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">info</span><span>Aún no tienes cuentas. <a class="font-bold underline" href="{{ route('accounts.index') }}">Crea una</a> para poder registrar transacciones.</span></div>
+@endif
 <!-- Transaction Type Switcher Tabs -->
 <div class="grid grid-cols-2 gap-1 bg-surface-container-low p-1.5 rounded-2xl">
 <button class="type-tab-btn py-2 px-3 rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-1.5 transition-all bg-surface-container-lowest text-error shadow-sm font-bold" data-type="expense" type="button">
@@ -360,7 +363,7 @@ Sin transacciones para mostrar
 <button class="px-space-md py-2.5 rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" id="cancelModalBtn" type="button">
             Cancelar
           </button>
-<button class="px-space-lg py-2.5 rounded-xl font-label-lg text-label-lg bg-primary hover:bg-primary-container text-on-primary shadow-[0_6px_16px_rgba(0,105,72,0.25)] transition-all" id="txSubmit" type="submit"><span class="inline-flex items-center gap-2"><span class="material-symbols-outlined text-[18px] hidden animate-spin" id="txSubmitIcon">progress_activity</span><span id="txSubmitText">Guardar Transacción</span></span></button>
+<button class="px-space-lg py-2.5 rounded-xl font-label-lg text-label-lg bg-primary hover:bg-primary-container text-on-primary shadow-[0_6px_16px_rgba(0,105,72,0.25)] transition-all" id="txSubmit" type="submit" @disabled($cuentas->isEmpty())><span class="inline-flex items-center gap-2"><span class="material-symbols-outlined text-[18px] hidden animate-spin" id="txSubmitIcon">progress_activity</span><span id="txSubmitText">Guardar Transacción</span></span></button>
 </div>
 </form>
 </div>
