@@ -51,8 +51,6 @@
       <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
         <a href="#caracteristicas" class="hover:text-brand-600 transition-colors">Características</a>
         <a href="#como-funciona" class="hover:text-brand-600 transition-colors">Cómo funciona</a>
-        <a href="#metas" class="hover:text-brand-600 transition-colors">Metas de Ahorro</a>
-        <a href="#seguridad" class="hover:text-brand-600 transition-colors">Seguridad</a>
       </nav>
 
       <!-- Right CTAs -->
