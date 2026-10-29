@@ -23,9 +23,6 @@ class DemoDataSeeder extends Seeder
             ['name' => 'Usuario Demo', 'password' => 'password'],
         );
 
-        // El usuario usa todas las categorías del catálogo
-        $usuario->categories()->syncWithoutDetaching(Category::pluck('id')->all());
-
         if ($usuario->accounts()->exists()) {
             return;
         }

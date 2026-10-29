@@ -10,8 +10,6 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            // Administrador que creó la categoría (catálogo global)
-            $table->foreignId('admin_id')->nullable()->constrained('admins')->nullOnDelete();
             $table->string('name');
             $table->string('type'); // income | expense
             $table->string('color')->nullable();

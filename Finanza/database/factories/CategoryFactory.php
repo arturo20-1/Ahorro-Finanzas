@@ -16,7 +16,6 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'admin_id' => null,
             'name' => fake()->unique()->word(),
             'type' => fake()->randomElement([Category::TYPE_INCOME, Category::TYPE_EXPENSE]),
             'color' => fake()->hexColor(),

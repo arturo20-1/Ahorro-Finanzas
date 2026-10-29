@@ -2,19 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Admin;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
     /**
-     * Catálogo global de categorías (se puede ejecutar varias veces).
+     * Catálogo de categorías compartido por todos los usuarios (se puede ejecutar varias veces).
      */
     public function run(): void
     {
-        $admin = Admin::query()->first();
-
         $categorias = [
             ['Alimentación', Category::TYPE_EXPENSE, '#f97316', 'restaurant'],
             ['Transporte', Category::TYPE_EXPENSE, '#3b82f6', 'directions_car'],
@@ -33,7 +30,7 @@ class CategorySeeder extends Seeder
         foreach ($categorias as [$nombre, $tipo, $color, $icono]) {
             Category::updateOrCreate(
                 ['name' => $nombre, 'type' => $tipo],
-                ['admin_id' => $admin?->id, 'color' => $color, 'icon' => $icono],
+                ['color' => $color, 'icon' => $icono],
             );
         }
     }
