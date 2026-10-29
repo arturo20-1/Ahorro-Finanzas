@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,12 +35,11 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        // La sesión es compartida con el panel de administrador: si antes se intentó abrir
-        // /admin, esa dirección queda guardada y mandaría al cliente al login del admin.
+        // Una dirección de /admin guardada solo se respeta si el usuario es administrador
         $destino = $request->session()->pull('url.intended');
         $ruta = (string) parse_url((string) $destino, PHP_URL_PATH);
 
-        if ($destino && ! str_starts_with($ruta, '/admin')) {
+        if ($destino && (! str_starts_with($ruta, '/admin') || $request->user()->isAdmin())) {
             return redirect()->to($destino);
         }
 
@@ -71,9 +69,6 @@ class AuthController extends Controller
             'email' => $datos['email'],
             'password' => $datos['password'], // se cifra solo (cast "hashed" del modelo)
         ]);
-
-        // El usuario nuevo empieza usando todas las categorías del catálogo global
-        $usuario->categories()->attach(Category::pluck('id')->all());
 
         Auth::login($usuario);
         $request->session()->regenerate();

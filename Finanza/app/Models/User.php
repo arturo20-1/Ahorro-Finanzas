@@ -7,7 +7,6 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -29,7 +28,16 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Indica si el usuario tiene permiso de administrador.
+     */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
     }
 
     public function accounts(): HasMany
@@ -50,23 +58,6 @@ class User extends Authenticatable
     public function goals(): HasMany
     {
         return $this->hasMany(Goal::class);
-    }
-
-    /**
-     * Categorías que el usuario eligió usar (muchos a muchos).
-     */
-    public function categories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class, 'category_user');
-    }
-
-    /**
-     * Regla de negocio: el usuario solo puede usar categorías que tiene asignadas.
-     * Úsala al validar transacciones y presupuestos.
-     */
-    public function usesCategory(int $categoryId): bool
-    {
-        return $this->categories()->whereKey($categoryId)->exists();
     }
 
     /**

@@ -24,8 +24,6 @@ class TransactionController extends Controller
     {
         $usuario = $request->user();
 
-        $this->prepararUsuario($usuario);
-
         // ---- Filtros (vienen por la dirección: ?q=...&type=...&period=...) ----
         $busqueda = trim((string) $request->query('q', ''));
         $tipo = $request->query('type');
@@ -82,7 +80,7 @@ class TransactionController extends Controller
         return view('transactions', [
             'transacciones' => $transacciones,
             'cuentas' => $usuario->accounts()->orderBy('name')->get(),
-            'categorias' => $usuario->categories()->orderBy('name')->get(),
+            'categorias' => Category::orderBy('name')->get(),
             'ingresos' => $ingresos,
             'gastos' => $gastos,
             'nIngresos' => $nIngresos,
@@ -108,8 +106,7 @@ class TransactionController extends Controller
             'type' => ['required', Rule::in([Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE])],
             'amount' => ['required', 'numeric', 'gt:0', 'max:9999999999.99'],
             'description' => ['required', 'string', 'max:255'],
-            // La categoría debe estar entre las que el usuario tiene asignadas
-            'category_id' => ['required', Rule::exists('category_user', 'category_id')->where('user_id', $usuario->id)],
+            'category_id' => ['required', Rule::exists('categories', 'id')],
             // La cuenta debe ser del mismo usuario
             'account_id' => ['required', Rule::exists('accounts', 'id')->where('user_id', $usuario->id)],
             'transaction_date' => ['required', 'date', 'before_or_equal:today'],
@@ -125,7 +122,7 @@ class TransactionController extends Controller
             'description.required' => 'Escribe el concepto o establecimiento.',
             'description.max' => 'El concepto no puede pasar de 255 caracteres.',
             'category_id.required' => 'Elige una categoría.',
-            'category_id.exists' => 'Esa categoría no está disponible para tu cuenta.',
+            'category_id.exists' => 'Esa categoría no es válida.',
             'account_id.required' => 'Elige una cuenta.',
             'account_id.exists' => 'Esa cuenta no es válida.',
             'transaction_date.required' => 'Elige la fecha.',
@@ -184,16 +181,5 @@ class TransactionController extends Controller
         return redirect()
             ->route('transactions.index', $parametros)
             ->with('status', 'Transacción guardada correctamente.');
-    }
-
-    /**
-     * Temporal: mientras no exista la pantalla para elegir categorías, se asignan
-     * las del catálogo al usuario que todavía no tiene ninguna.
-     */
-    private function prepararUsuario($usuario): void
-    {
-        if ($usuario->categories()->doesntExist()) {
-            $usuario->categories()->attach(Category::pluck('id')->all());
-        }
     }
 }

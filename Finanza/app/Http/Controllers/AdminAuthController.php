@@ -25,7 +25,8 @@ class AdminAuthController extends Controller
             'password.required' => 'Escribe tu contraseña.',
         ]);
 
-        if (! Auth::guard('admin')->attempt($credenciales)) {
+        // Solo entran usuarios con permiso de administrador
+        if (! Auth::attempt($credenciales + ['is_admin' => true])) {
             return back()
                 ->withErrors(['email' => 'El correo o la contraseña no son correctos.'])
                 ->onlyInput('email');
@@ -46,7 +47,7 @@ class AdminAuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        Auth::guard('admin')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

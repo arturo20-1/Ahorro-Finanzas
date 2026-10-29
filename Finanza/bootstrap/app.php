@@ -12,13 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // A dónde mandar a quien no ha iniciado sesión (admin y cliente son accesos separados)
+        // A dónde mandar a quien no ha iniciado sesión
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('admin', 'admin/*')
             ? route('admin.login')
             : route('login'));
 
         // A dónde mandar a quien ya tiene sesión y abre una pantalla de login
-        $middleware->redirectUsersTo(fn (Request $request) => $request->is('admin', 'admin/*')
+        $middleware->redirectUsersTo(fn (Request $request) => ($request->user()?->isAdmin() && $request->is('admin', 'admin/*'))
             ? route('admin.dashboard')
             : route('dashboard'));
     })
