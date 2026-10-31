@@ -143,7 +143,7 @@
 <p class="text-xs text-slate-400 mt-0.5 font-medium" id="mainSectionSubtitle">Ingresa tus credenciales para acceder</p>
 </div>
 @if ($errors->any())
-<div class="mb-5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium px-4 py-3 space-y-1">
+<div class="mb-5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium px-4 py-3 space-y-1" id="authErrors" role="alert">
 @foreach ($errors->all() as $error)
 <p>{{ $error }}</p>
 @endforeach
@@ -320,6 +320,15 @@
         btnTabRegister.className = 'group relative z-20 flex items-center justify-center font-bold tracking-wider text-xs sm:text-sm uppercase transition-all duration-300 py-3.5 px-8 rounded-l-full bg-white text-emerald-800 shadow-[-8px_4px_16px_rgba(0,0,0,0.18)] translate-x-1';
         btnTabRegister.querySelector('span span').className = 'material-symbols-outlined text-sm text-emerald-600';
       }
+
+      // El mensaje de error se quita al cambiar de pestaña o al empezar a escribir
+      const authErrors = document.getElementById('authErrors');
+      function ocultarErrores() { if (authErrors) authErrors.classList.add('hidden'); }
+      btnTabLogin.addEventListener('click', ocultarErrores);
+      btnTabRegister.addEventListener('click', ocultarErrores);
+      document.querySelectorAll('#formLoginView input, #formRegisterView input').forEach((campo) => {
+        campo.addEventListener('keydown', ocultarErrores);
+      });
 
       btnTabLogin.addEventListener('click', setLoginActive);
       btnTabRegister.addEventListener('click', setRegisterActive);
