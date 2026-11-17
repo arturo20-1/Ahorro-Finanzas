@@ -18,8 +18,9 @@ Route::view('/', 'welcome')->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
-    Route::post('/registro', [AuthController::class, 'register'])->name('register.store');
+    // throttle:5,1 = máximo 5 intentos por minuto desde la misma IP (frena la fuerza bruta)
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.store');
+    Route::post('/registro', [AuthController::class, 'register'])->middleware('throttle:10,1')->name('register.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -31,10 +32,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/presupuestos', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('/metas', [GoalController::class, 'index'])->name('goals.index');
     Route::get('/reportes', [AnalyticsController::class, 'index'])->name('analytics.index');
-    Route::get('/cuentas', [AccountController::class, 'index'])->name('accounts.index');
-    Route::post('/cuentas', [AccountController::class, 'store'])->name('accounts.store');
-    Route::put('/cuentas/{account}', [AccountController::class, 'update'])->name('accounts.update');
-    Route::delete('/cuentas/{account}', [AccountController::class, 'destroy'])->name('accounts.destroy');
+    // Route::resource crea de una vez index, store, update y destroy de cuentas:
+    //   GET /cuentas, POST /cuentas, PUT /cuentas/{account}, DELETE /cuentas/{account}
+    // con los nombres accounts.index, accounts.store, accounts.update y accounts.destroy
+    Route::resource('cuentas', AccountController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['cuentas' => 'account'])
+        ->names('accounts');
     Route::get('/configuracion', [SettingsController::class, 'index'])->name('settings.index');
 });
 
@@ -42,13 +46,13 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(RestrictAdminIp::class)->group(function () {
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
-        Route::post('/login', [AdminAuthController::class, 'login'])->name('login.store');
+        Route::post('/login', [AdminAuthController::class, 'login'])->middleware('throttle:5,1')->name('login.store');
     });
 
     Route::middleware(['auth', EnsureAdmin::class])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
-        Route::post('/categorias', fn () => back())->name('categories.store');
+        Route::post('/categorias', [AdminController::class, 'storeCategory'])->name('categories.store');
     });
 });

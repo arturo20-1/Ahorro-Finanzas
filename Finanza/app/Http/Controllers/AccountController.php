@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AccountRequest;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class AccountController extends Controller
@@ -66,22 +66,18 @@ class AccountController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(AccountRequest $request): RedirectResponse
     {
-        $datos = $request->validate(...$this->reglas($request));
-
-        $request->user()->accounts()->create($datos);
+        $request->user()->accounts()->create($request->validated());
 
         return redirect()->route('accounts.index')->with('status', 'Cuenta creada correctamente.');
     }
 
-    public function update(Request $request, Account $account): RedirectResponse
+    public function update(AccountRequest $request, Account $account): RedirectResponse
     {
-        $this->comprobarDueno($request, $account);
+        // El dueño ya se comprobó en AccountRequest::authorize()
 
-        $datos = $request->validate(...$this->reglas($request, $account));
-
-        $account->update($datos);
+        $account->update($request->validated());
 
         return redirect()->route('accounts.index')->with('status', 'Cuenta actualizada correctamente.');
     }
@@ -108,40 +104,5 @@ class AccountController extends Controller
     private function comprobarDueno(Request $request, Account $account): void
     {
         abort_unless($account->user_id === $request->user()->id, 404);
-    }
-
-    /**
-     * Reglas y mensajes de validación (crear y editar).
-     *
-     * @return array{0: array<string, mixed>, 1: array<string, string>}
-     */
-    private function reglas(Request $request, ?Account $account = null): array
-    {
-        $reglas = [
-            'name' => [
-                'required', 'string', 'max:80',
-                Rule::unique('accounts', 'name')
-                    ->where(fn ($q) => $q->where('user_id', $request->user()->id))
-                    ->ignore($account?->id),
-            ],
-            'type' => ['required', Rule::in(array_keys(Account::TYPES))],
-            'balance' => ['required', 'numeric', 'between:-9999999999.99,9999999999.99'],
-            'currency' => ['required', Rule::in(Account::CURRENCIES)],
-        ];
-
-        $mensajes = [
-            'name.required' => 'Escribe el nombre de la cuenta.',
-            'name.max' => 'El nombre no puede pasar de 80 caracteres.',
-            'name.unique' => 'Ya tienes una cuenta con ese nombre.',
-            'type.required' => 'Elige el tipo de cuenta.',
-            'type.in' => 'El tipo de cuenta no es válido.',
-            'balance.required' => 'Escribe el saldo (puede ser 0).',
-            'balance.numeric' => 'El saldo debe ser un número.',
-            'balance.between' => 'El saldo es demasiado grande.',
-            'currency.required' => 'Elige la moneda.',
-            'currency.in' => 'La moneda no es válida.',
-        ];
-
-        return [$reglas, $mensajes];
     }
 }

@@ -50,7 +50,8 @@ return [
     |
     */
 
-    'expiration' => null,
+    // Los tokens de la API vencen a los 7 días (10080 minutos). Cambia con SANCTUM_EXPIRATION en .env
+    'expiration' => (int) env('SANCTUM_EXPIRATION', 60 * 24 * 7),
 
     /*
     |--------------------------------------------------------------------------

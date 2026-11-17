@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
+use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Category;
 use App\Models\Transaction;
+use App\Services\TransactionRecorder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
 
@@ -98,46 +96,12 @@ class TransactionController extends Controller
     /**
      * Guarda una transacción nueva y actualiza el saldo de la cuenta.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreTransactionRequest $request, TransactionRecorder $registrador): RedirectResponse
     {
         $usuario = $request->user();
 
-        $datos = $request->validate([
-            'type' => ['required', Rule::in([Transaction::TYPE_INCOME, Transaction::TYPE_EXPENSE])],
-            'amount' => ['required', 'numeric', 'gt:0', 'max:9999999999.99'],
-            'description' => ['required', 'string', 'max:255'],
-            'category_id' => ['required', Rule::exists('categories', 'id')],
-            // La cuenta debe ser del mismo usuario
-            'account_id' => ['required', Rule::exists('accounts', 'id')->where('user_id', $usuario->id)],
-            'transaction_date' => ['required', 'date', 'before_or_equal:today'],
-            // Código único del formulario: evita guardar la misma transacción dos veces
-            'submission_token' => ['required', 'string', 'max:64'],
-        ], [
-            'type.required' => 'Elige si es un gasto o un ingreso.',
-            'type.in' => 'El tipo de transacción no es válido.',
-            'amount.required' => 'Escribe el importe.',
-            'amount.numeric' => 'El importe debe ser un número.',
-            'amount.gt' => 'El importe debe ser mayor que cero.',
-            'amount.max' => 'El importe es demasiado grande.',
-            'description.required' => 'Escribe el concepto o establecimiento.',
-            'description.max' => 'El concepto no puede pasar de 255 caracteres.',
-            'category_id.required' => 'Elige una categoría.',
-            'category_id.exists' => 'Esa categoría no es válida.',
-            'account_id.required' => 'Elige una cuenta.',
-            'account_id.exists' => 'Esa cuenta no es válida.',
-            'transaction_date.required' => 'Elige la fecha.',
-            'transaction_date.date' => 'La fecha no es válida.',
-            'transaction_date.before_or_equal' => 'La fecha no puede ser futura.',
-        ]);
-
-        // El tipo de la categoría debe coincidir con el de la transacción
-        $categoria = Category::findOrFail($datos['category_id']);
-
-        if ($categoria->type !== $datos['type']) {
-            throw ValidationException::withMessages([
-                'category_id' => 'La categoría elegida no corresponde a este tipo de transacción.',
-            ]);
-        }
+        // Datos ya validados (incluida la regla "categoría del mismo tipo") por StoreTransactionRequest
+        $datos = $request->validated();
 
         // Anti doble envío: cada formulario trae un código; solo el primer envío con ese código se guarda
         $token = $datos['submission_token'];
@@ -151,21 +115,8 @@ class TransactionController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($usuario, $datos) {
-                Transaction::create(['user_id' => $usuario->id] + $datos);
-
-                $cuenta = Account::query()
-                    ->whereKey($datos['account_id'])
-                    ->where('user_id', $usuario->id)
-                    ->lockForUpdate()
-                    ->firstOrFail();
-
-                if ($datos['type'] === Transaction::TYPE_INCOME) {
-                    $cuenta->increment('balance', $datos['amount']);
-                } else {
-                    $cuenta->decrement('balance', $datos['amount']);
-                }
-            });
+            // Guarda la transacción y ajusta el saldo de la cuenta (ver App\Services\TransactionRecorder)
+            $registrador->record($usuario, $datos);
         } catch (Throwable $e) {
             // Si algo falló, libera el código para poder reintentar
             Cache::forget($clave);

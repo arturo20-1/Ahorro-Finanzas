@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -16,16 +17,10 @@ class AuthController extends Controller
         return view('login');
     }
 
-    public function login(Request $request): RedirectResponse
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $credenciales = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ], [
-            'email.required' => 'Escribe tu correo electrónico.',
-            'email.email' => 'Escribe un correo electrónico válido.',
-            'password.required' => 'Escribe tu contraseña.',
-        ]);
+        // Los datos ya llegan validados por LoginRequest
+        $credenciales = $request->validated();
 
         if (! Auth::attempt($credenciales)) {
             return back()
@@ -46,23 +41,10 @@ class AuthController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function register(Request $request): RedirectResponse
+    public function register(RegisterRequest $request): RedirectResponse
     {
-        $datos = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-            'terms' => ['accepted'],
-        ], [
-            'name.required' => 'Escribe tu nombre completo.',
-            'email.required' => 'Escribe tu correo electrónico.',
-            'email.email' => 'Escribe un correo electrónico válido.',
-            'email.unique' => 'Ese correo ya está registrado.',
-            'password.required' => 'Escribe una contraseña.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'terms.accepted' => 'Debes aceptar los términos de servicio.',
-        ]);
+        // Los datos ya llegan validados por RegisterRequest
+        $datos = $request->validated();
 
         $usuario = User::create([
             'name' => $datos['name'],

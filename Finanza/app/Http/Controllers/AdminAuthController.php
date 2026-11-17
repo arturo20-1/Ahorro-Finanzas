@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,16 +15,10 @@ class AdminAuthController extends Controller
         return view('admin.login');
     }
 
-    public function login(Request $request): RedirectResponse
+    public function login(LoginRequest $request): RedirectResponse
     {
-        $credenciales = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ], [
-            'email.required' => 'Escribe tu correo electrónico.',
-            'email.email' => 'Escribe un correo electrónico válido.',
-            'password.required' => 'Escribe tu contraseña.',
-        ]);
+        // Mismas reglas y mensajes que el login normal (LoginRequest)
+        $credenciales = $request->validated();
 
         // Solo entran usuarios con permiso de administrador
         if (! Auth::attempt($credenciales + ['is_admin' => true])) {
