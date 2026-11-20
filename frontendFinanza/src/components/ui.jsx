@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Icono de Material Symbols (la fuente de iconos del diseño)
 export function Icon({ name, className = '', fill = false }) {
@@ -132,6 +133,27 @@ export function ProgressBar({ percent, tone = 'ok' }) {
     <div className="h-2 w-full rounded-full bg-surface-container-high overflow-hidden">
       <div className={`h-full rounded-full ${colors[tone]}`} style={{ width: `${width}%` }} />
     </div>
+  );
+}
+
+// Botón "Volver": regresa a la página anterior; si no hay (se abrió directo), va a la ruta de respaldo
+export function BackButton({ fallback = '/', className = '' }) {
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    if (window.history.state && window.history.state.idx > 0) navigate(-1);
+    else navigate(fallback);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={goBack}
+      className={`inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-xl font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors ${className}`}
+    >
+      <Icon name="arrow_back" className="text-[20px]" />
+      <span>Volver</span>
+    </button>
   );
 }
 
