@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api, fieldError, isGeneralError } from '../api';
 import { useFetch } from '../lib/hooks';
 import { Alert, Button, Card, Empty, ErrorBox, Field, Icon, Loading, Modal, PageHeader, ProgressBar, inputClass } from '../components/ui';
@@ -63,18 +64,24 @@ function GoalForm({ goal, onClose, onSaved }) {
   );
 }
 
-// Formulario "Abonar fondos"
-function ContributeForm({ goal, onClose, onSaved }) {
+// Formulario "Abonar fondos": el dinero sale de una cuenta y se suma a la meta
+function ContributeForm({ goal, accounts, onClose, onSaved }) {
   const [amount, setAmount] = useState('');
+  const [accountId, setAccountId] = useState(accounts[0] ? accounts[0].id : '');
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  const account = accounts.find((a) => String(a.id) === String(accountId));
+  const value = Number(amount) || 0;
+  // Las tarjetas de crédito pueden quedar en negativo; las demás cuentas necesitan saldo
+  const notEnough = Boolean(account) && account.group !== 'credit' && value > account.balance;
 
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
-      await api(`/goals/${goal.id}/contribute`, { method: 'POST', body: { amount } });
+      await api(`/goals/${goal.id}/contribute`, { method: 'POST', body: { amount, account_id: accountId } });
       onSaved();
     } catch (err) {
       setError(err);
@@ -82,20 +89,53 @@ function ContributeForm({ goal, onClose, onSaved }) {
     }
   };
 
+  if (accounts.length === 0) {
+    return (
+      <Empty icon="account_balance" title="Primero crea una cuenta">
+        Necesitas una cuenta de la que salga el dinero.{' '}
+        <Link to="/cuentas" className="text-primary hover:underline">
+          Ir a Cuentas
+        </Link>
+      </Empty>
+    );
+  }
+
   return (
     <form onSubmit={submit} className="flex flex-col gap-space-md">
       {isGeneralError(error) && <Alert>{error.message}</Alert>}
       <p className="font-body-md text-body-md text-on-surface-variant">
         Llevas {money(goal.current_amount)} de {money(goal.target_amount)}.
       </p>
+
+      <Field label="Cuenta de origen" error={fieldError(error, 'account_id')}>
+        <select className={inputClass} value={accountId} onChange={(e) => setAccountId(e.target.value)}>
+          {accounts.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name} · {money(a.balance)} {a.currency}
+            </option>
+          ))}
+        </select>
+      </Field>
+
       <Field label="Monto a abonar" error={fieldError(error, 'amount')}>
         <input className={inputClass} type="number" step="0.01" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" />
       </Field>
+
+      {account && (
+        <p className={`font-label-md text-label-md ${notEnough ? 'text-error' : 'text-on-surface-variant'}`}>
+          {notEnough
+            ? `Saldo insuficiente: ${account.name} tiene ${money(account.balance)}.`
+            : value > 0
+              ? `${account.name} quedará con ${money(account.balance - value)}.`
+              : `Saldo disponible en ${account.name}: ${money(account.balance)}.`}
+        </p>
+      )}
+
       <div className="flex justify-end gap-space-sm">
         <Button variant="ghost" onClick={onClose}>
           Cancelar
         </Button>
-        <Button type="submit" loading={saving}>
+        <Button type="submit" loading={saving} disabled={notEnough}>
           Abonar
         </Button>
       </div>
@@ -105,6 +145,7 @@ function ContributeForm({ goal, onClose, onSaved }) {
 
 export default function Goals() {
   const { data, error, loading, reload } = useFetch('/goals');
+  const accounts = useFetch('/accounts'); // cuentas de las que puede salir un abono
   const [editing, setEditing] = useState(null); // null = cerrado, 'new' = crear, objeto = editar
   const [contributing, setContributing] = useState(null);
   const [filter, setFilter] = useState('all');
@@ -136,6 +177,7 @@ export default function Goals() {
     setEditing(null);
     setContributing(null);
     reload();
+    accounts.reload();
   };
 
   const tabs = [
@@ -256,7 +298,11 @@ export default function Goals() {
       )}
       {contributing && (
         <Modal title={`Abonar a "${contributing.name}"`} onClose={() => setContributing(null)}>
-          <ContributeForm goal={contributing} onClose={() => setContributing(null)} onSaved={saved} />
+          {accounts.data ? (
+            <ContributeForm goal={contributing} accounts={accounts.data.data} onClose={() => setContributing(null)} onSaved={saved} />
+          ) : (
+            <Loading />
+          )}
         </Modal>
       )}
     </div>

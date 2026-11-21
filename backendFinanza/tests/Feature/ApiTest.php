@@ -93,4 +93,67 @@ class ApiTest extends TestCase
 
         $this->getJson('/api/admin/summary')->assertNotFound();
     }
+
+    public function test_abonar_a_una_meta_descuenta_de_la_cuenta(): void
+    {
+        $usuario = User::factory()->create();
+        Sanctum::actingAs($usuario);
+
+        $cuenta = $usuario->accounts()->create(['name' => 'Caja', 'type' => 'cash', 'balance' => 100, 'currency' => 'USD']);
+        $meta = $usuario->goals()->create(['name' => 'Carro', 'target_amount' => 1000, 'current_amount' => 0]);
+
+        $this->postJson('/api/goals/'.$meta->id.'/contribute', ['amount' => 30, 'account_id' => $cuenta->id])
+            ->assertOk();
+
+        $this->assertEquals(70.0, (float) $cuenta->fresh()->balance);
+        $this->assertEquals(30.0, (float) $meta->fresh()->current_amount);
+    }
+
+    public function test_no_se_puede_abonar_mas_de_lo_que_hay_en_la_cuenta(): void
+    {
+        $usuario = User::factory()->create();
+        Sanctum::actingAs($usuario);
+
+        $cuenta = $usuario->accounts()->create(['name' => 'Caja', 'type' => 'cash', 'balance' => 20, 'currency' => 'USD']);
+        $meta = $usuario->goals()->create(['name' => 'Carro', 'target_amount' => 1000, 'current_amount' => 0]);
+
+        $this->postJson('/api/goals/'.$meta->id.'/contribute', ['amount' => 50, 'account_id' => $cuenta->id])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('account_id');
+
+        $this->assertEquals(20.0, (float) $cuenta->fresh()->balance);
+        $this->assertEquals(0.0, (float) $meta->fresh()->current_amount);
+    }
+
+    public function test_el_login_guarda_el_token_en_una_cookie_httponly_que_autentica(): void
+    {
+        User::factory()->create(['email' => 'ana@test.com']);
+
+        $login = $this->postJson('/api/login', ['email' => 'ana@test.com', 'password' => 'password'])->assertOk();
+
+        $cookie = $login->getCookie('finanzas_token', false);
+        $this->assertNotNull($cookie);
+        $this->assertTrue($cookie->isHttpOnly());
+
+        // Con solo la cookie (sin cabecera Authorization) la API reconoce al usuario
+        $this->withUnencryptedCookie('finanzas_token', $cookie->getValue())
+            ->getJson('/api/user')
+            ->assertOk()
+            ->assertJsonPath('data.email', 'ana@test.com');
+    }
+
+    public function test_el_logout_borra_la_cookie(): void
+    {
+        User::factory()->create(['email' => 'ana@test.com']);
+
+        $token = $this->postJson('/api/login', ['email' => 'ana@test.com', 'password' => 'password'])
+            ->getCookie('finanzas_token', false)
+            ->getValue();
+
+        $logout = $this->withUnencryptedCookie('finanzas_token', $token)->postJson('/api/logout')->assertOk();
+
+        $cookie = $logout->getCookie('finanzas_token', false);
+        $this->assertNotNull($cookie);
+        $this->assertLessThan(time(), $cookie->getExpiresTime()); // cookie vencida = el navegador la borra
+    }
 }

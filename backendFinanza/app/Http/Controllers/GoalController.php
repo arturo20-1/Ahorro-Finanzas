@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GoalContributionRequest;
 use App\Http\Requests\GoalRequest;
 use App\Http\Resources\GoalResource;
+use App\Models\Account;
 use App\Models\Goal;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Metas de ahorro.
@@ -51,11 +54,33 @@ class GoalController extends Controller
     }
 
     /**
-     * "Abonar fondos": suma un monto a lo ahorrado de la meta.
+     * "Abonar fondos": el dinero sale de una cuenta del usuario y se suma a lo ahorrado de la meta.
+     * Todo o nada: si algo falla, ni la cuenta ni la meta cambian.
      */
     public function contribute(GoalContributionRequest $request, Goal $goal): GoalResource
     {
-        $goal->increment('current_amount', $request->validated('amount'));
+        $monto = $request->validated('amount');
+
+        DB::transaction(function () use ($request, $goal, $monto) {
+            // Bloquea la fila de la cuenta para que dos abonos a la vez no pisen el saldo
+            $cuenta = Account::query()
+                ->whereKey($request->validated('account_id'))
+                ->where('user_id', $request->user()->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Las tarjetas de crédito pueden quedar en negativo; las demás cuentas necesitan saldo suficiente
+            $esCredito = (Account::TYPES[$cuenta->type]['group'] ?? null) === 'credit';
+
+            if (! $esCredito && (float) $cuenta->balance < (float) $monto) {
+                throw ValidationException::withMessages([
+                    'account_id' => 'Saldo insuficiente en esa cuenta.',
+                ]);
+            }
+
+            $cuenta->decrement('balance', $monto);
+            $goal->increment('current_amount', $monto);
+        });
 
         return new GoalResource($goal->refresh());
     }

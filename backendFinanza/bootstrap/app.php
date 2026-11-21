@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\RestrictAdminIp;
+use App\Http\Middleware\TokenFromCookie;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // El token viaja en una cookie HttpOnly: se pasa a la cabecera Authorization antes de auth:sanctum
+        $middleware->api(prepend: [TokenFromCookie::class]);
+
         // Nombres cortos para usar en las rutas: ->middleware('admin')
         $middleware->alias([
             'admin' => EnsureAdmin::class,

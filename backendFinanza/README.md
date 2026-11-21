@@ -64,7 +64,7 @@ Todas las rutas empiezan con `/api`. Enviar siempre `Accept: application/json`.
 | PUT, DELETE | `/budgets/{id}` | Editar / eliminar presupuesto | sí |
 | GET, POST | `/goals` | Listar / crear meta de ahorro | sí |
 | PUT, DELETE | `/goals/{id}` | Editar / eliminar meta | sí |
-| POST | `/goals/{id}/contribute` | Abonar fondos a una meta (`amount`) | sí |
+| POST | `/goals/{id}/contribute` | Abonar fondos a una meta: `amount` y `account_id` (la cuenta de la que sale el dinero; se le descuenta) | sí |
 | PUT | `/profile` | Cambiar nombre y correo | sí |
 | PUT | `/profile/password` | Cambiar contraseña (`current_password`, `password`, `password_confirmation`) | sí |
 | POST | `/admin/login` | Login de administrador | no |

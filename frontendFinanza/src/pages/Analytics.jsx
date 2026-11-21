@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import './Analytics.css';
+import { useAuth } from '../AuthContext';
 import { useFetch } from '../lib/hooks';
-import { Card, Empty, ErrorBox, Icon, Loading, PageHeader } from '../components/ui';
-import { money, monthLabel, percent } from '../lib/format';
+import { Button, Card, Empty, ErrorBox, Icon, Loading, PageHeader } from '../components/ui';
+import { money, monthLabel, percent, shortDate, today } from '../lib/format';
 
 const PERIODS = [
   ['month', 'Este mes'],
@@ -10,17 +12,36 @@ const PERIODS = [
 ];
 
 export default function Analytics() {
+  const { user } = useAuth();
   const [period, setPeriod] = useState('month');
   const { data, error, loading, reload } = useFetch('/analytics', { period });
 
   const d = data ? data.data : null;
+  const periodName = (PERIODS.find(([value]) => value === period) || [null, ''])[1];
+
+  // Abre el diálogo de impresión (ahí se elige "Guardar como PDF").
+  // El título de la página se usa como nombre sugerido del archivo.
+  const printReport = () => {
+    const previous = document.title;
+    document.title = `Reporte financiero ${d.from} a ${d.to}`;
+    const restore = () => {
+      document.title = previous;
+      window.removeEventListener('afterprint', restore);
+    };
+    window.addEventListener('afterprint', restore);
+    window.print();
+  };
   // Altura máxima de las barras del gráfico mensual
   const maxBar = d ? Math.max(1, ...d.monthly.flatMap((m) => [m.income, m.expenses])) : 1;
 
   return (
     <div className="flex flex-col w-full pb-space-xl">
       <PageHeader title="Reportes & Análisis" subtitle="Tendencias, desglose de gastos y rendimiento de tu patrimonio.">
-        <div className="flex items-center bg-surface-container p-1 rounded-xl">
+        <Button variant="soft" className="no-print" disabled={!d} onClick={printReport}>
+          <Icon name="picture_as_pdf" className="text-[20px]" />
+          Imprimir / PDF
+        </Button>
+        <div className="no-print flex items-center bg-surface-container p-1 rounded-xl">
           {PERIODS.map(([value, text]) => (
             <button
               key={value}
@@ -41,6 +62,14 @@ export default function Analytics() {
 
       {d && (
         <>
+          {/* Solo se ve al imprimir: datos del reporte */}
+          <div className="print-only mb-space-md">
+            <p className="font-body-md text-body-md text-on-surface">
+              Cliente: <strong>{user && user.name}</strong> · Periodo: <strong>{periodName}</strong> ({shortDate(d.from)} - {shortDate(d.to)})
+            </p>
+            <p className="font-label-md text-label-md text-on-surface-variant">Generado el {shortDate(today())} · Finanzas & Ahorro</p>
+          </div>
+
           <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md mb-space-lg">
             <Card>
               <p className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Patrimonio neto</p>

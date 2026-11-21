@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Goal;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Valida un abono a una meta ("Abonar fondos").
@@ -29,6 +30,8 @@ class GoalContributionRequest extends FormRequest
     {
         return [
             'amount' => ['required', 'numeric', 'gt:0', 'max:9999999999.99'],
+            // La cuenta de la que sale el dinero debe ser del mismo usuario
+            'account_id' => ['required', Rule::exists('accounts', 'id')->where('user_id', $this->user()->id)],
         ];
     }
 
@@ -41,6 +44,8 @@ class GoalContributionRequest extends FormRequest
             'amount.required' => 'Escribe el monto a abonar.',
             'amount.numeric' => 'El monto debe ser un número.',
             'amount.gt' => 'El monto debe ser mayor que cero.',
+            'account_id.required' => 'Elige de qué cuenta sale el dinero.',
+            'account_id.exists' => 'Esa cuenta no es válida.',
         ];
     }
 }

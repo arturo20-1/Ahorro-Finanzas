@@ -1,0 +1,4 @@
+# Dirección de la API (backendFinanza). Sin barra al final.
+# Déjalo comentado: por defecto usa el mismo host desde el que abres la página
+# (http://localhost:5173 -> http://localhost:8000/api), que es lo que necesita la cookie del token.
+# VITE_API_URL=http://localhost:8000/api

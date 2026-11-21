@@ -27,6 +27,6 @@ return [
 
     'max_age' => 0,
 
-    // Usamos tokens en la cabecera Authorization, no cookies
-    'supports_credentials' => false,
+    // La cookie del token viaja entre el frontend y la API (los orígenes de arriba son explícitos)
+    'supports_credentials' => true,
 ];

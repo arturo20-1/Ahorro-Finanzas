@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Support\AuthCookie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -28,9 +29,11 @@ class AdminAuthController extends Controller
 
         $usuario->tokens()->delete();
 
+        $token = $usuario->createToken('admin')->plainTextToken;
+
         return response()->json([
             'user' => new UserResource($usuario),
-            'token' => $usuario->createToken('admin')->plainTextToken,
-        ]);
+            'token' => $token,
+        ])->withCookie(AuthCookie::make($token));
     }
 }

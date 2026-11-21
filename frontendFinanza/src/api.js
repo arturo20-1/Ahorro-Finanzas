@@ -1,13 +1,19 @@
 // Cliente de la API: todas las pantallas hablan con el backend a través de esta función.
+//
+// El token de acceso vive en una cookie HttpOnly que pone el backend al iniciar sesión:
+// JavaScript no puede leerla, y el navegador la manda sola gracias a credentials: 'include'.
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api').replace(/\/$/, '');
-const TOKEN_KEY = 'finanzas_token';
+// Por defecto usa el mismo host desde el que abriste la página (localhost o 127.0.0.1),
+// porque la cookie solo viaja si el frontend y el backend comparten host.
+const API_URL = (import.meta.env.VITE_API_URL || `http://${window.location.hostname}:8000/api`).replace(/\/$/, '');
+const SESSION_KEY = 'finanzas_session';
 
-export const getToken = () => localStorage.getItem(TOKEN_KEY);
+// Solo recuerda (sin ningún secreto) que hubo un login, para no pedir /user a quien nunca entró.
+export const hasSession = () => localStorage.getItem(SESSION_KEY) === '1';
 
-export const setToken = (token) => {
-  if (token) localStorage.setItem(TOKEN_KEY, token);
-  else localStorage.removeItem(TOKEN_KEY);
+export const markSession = (active) => {
+  if (active) localStorage.setItem(SESSION_KEY, '1');
+  else localStorage.removeItem(SESSION_KEY);
 };
 
 // Error de la API: trae el mensaje, el código HTTP y los errores por campo (422)
@@ -31,14 +37,12 @@ export async function api(path, { method = 'GET', body, params } = {}) {
     if (value !== '' && value !== null && value !== undefined) url.searchParams.set(key, value);
   });
 
-  const token = getToken();
   const headers = { Accept: 'application/json' };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
-  if (token) headers.Authorization = `Bearer ${token}`;
 
   let response;
   try {
-    response = await fetch(url, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined });
+    response = await fetch(url, { method, headers, credentials: 'include', body: body !== undefined ? JSON.stringify(body) : undefined });
   } catch (e) {
     throw new ApiError('No se pudo conectar con el servidor. Revisa que el backend esté corriendo.', 0, {});
   }
@@ -53,9 +57,9 @@ export async function api(path, { method = 'GET', body, params } = {}) {
   }
 
   if (!response.ok) {
-    // Token vencido o revocado: se avisa para cerrar la sesión en pantalla
-    if (response.status === 401 && token) {
-      setToken(null);
+    // Cookie vencida o token revocado: se avisa para cerrar la sesión en pantalla
+    if (response.status === 401) {
+      markSession(false);
       window.dispatchEvent(new Event('auth:expired'));
     }
     throw new ApiError((data && data.message) || 'Ocurrió un error inesperado.', response.status, data && data.errors);
