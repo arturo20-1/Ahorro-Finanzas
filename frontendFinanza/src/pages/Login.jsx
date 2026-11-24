@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import { fieldError, isGeneralError } from '../api';
+import { ApiError, fieldError, isGeneralError } from '../api';
 import { Alert, Icon } from '../components/ui';
 import AuthScene, { AuthField } from '../components/AuthScene';
 
@@ -35,6 +35,7 @@ export default function Login() {
   const [caps, setCaps] = useState(false);
   // Mientras se muestra la animación de éxito no se redirige todavía
   const holdRedirect = useRef(false);
+  const confirmRef = useRef(null);
 
   const from = (location.state && location.state.from) || '/dashboard';
 
@@ -42,7 +43,10 @@ export default function Login() {
   if (user && !holdRedirect.current) return <Navigate to={from} replace />;
 
   const isRegister = mode === 'register';
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const set = (key) => (e) => {
+    setError(null);
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+  };
   const bind = (name) => ({ onFocus: () => setFocus(name), onBlur: () => setFocus(null) });
   const checkCaps = (e) => setCaps(Boolean(e.getModifierState && e.getModifierState('CapsLock')));
 
@@ -53,6 +57,16 @@ export default function Login() {
 
   const submit = async (e) => {
     e.preventDefault();
+
+    if (isRegister && (form.password_confirmation === '' || form.password_confirmation !== form.password)) {
+      const message = form.password_confirmation === '' ? 'Escribe de nuevo la contraseña para confirmarla.' : 'Las contraseñas no coinciden.';
+      setError(new ApiError(message, 422, { password_confirmation: [message] }));
+      setShake(true);
+      setTimeout(() => setShake(false), 600);
+      if (confirmRef.current) confirmRef.current.focus();
+      return;
+    }
+
     setLoading(true);
     setError(null);
     holdRedirect.current = true;
@@ -187,8 +201,9 @@ export default function Login() {
           {isRegister && (
             <>
               <div className="auth-appear">
-                <AuthField icon="verified_user">
+                <AuthField icon="verified_user" error={fieldError(error, 'password_confirmation')}>
                   <input
+                    ref={confirmRef}
                     className="auth-input font-body-md text-body-md"
                     type={showPass ? 'text' : 'password'}
                     aria-label="Repite la contraseña"
@@ -199,7 +214,7 @@ export default function Login() {
                     {...bind('confirm')}
                   />
                 </AuthField>
-                {confirmFilled && (
+                {confirmFilled && !fieldError(error, 'password_confirmation') && (
                   <p className={`flex items-center gap-1 font-label-sm text-label-sm mt-1 ${confirmOk ? 'text-primary' : 'text-on-surface-variant'}`}>
                     <Icon name={confirmOk ? 'check_circle' : 'pending'} className="text-[16px]" />
                     {confirmOk ? 'Las contraseñas coinciden' : 'Todavía no coinciden'}

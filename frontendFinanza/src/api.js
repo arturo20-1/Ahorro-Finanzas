@@ -3,9 +3,27 @@
 // El token de acceso vive en una cookie HttpOnly que pone el backend al iniciar sesión:
 // JavaScript no puede leerla, y el navegador la manda sola gracias a credentials: 'include'.
 
-// Por defecto usa el mismo host desde el que abriste la página (localhost o 127.0.0.1),
-// porque la cookie solo viaja si el frontend y el backend comparten host.
-const API_URL = (import.meta.env.VITE_API_URL || `http://${window.location.hostname}:8000/api`).replace(/\/$/, '');
+// Por defecto la API se llama con la ruta relativa /api: en desarrollo Vite la reenvía al backend
+// (ver vite.config.js), así la página y la API comparten origen y la cookie funciona sin ajustes.
+// Si defines VITE_API_URL (por ejemplo en producción) se usa esa dirección.
+function resolveApiUrl() {
+  const configured = import.meta.env.VITE_API_URL;
+  if (!configured) return '/api';
+
+  // "localhost" y "127.0.0.1" son sitios distintos para las cookies: se alinea con el host de la página
+  try {
+    const url = new URL(configured);
+    const loopback = ['localhost', '127.0.0.1'];
+    if (loopback.includes(url.hostname) && loopback.includes(window.location.hostname)) {
+      url.hostname = window.location.hostname;
+    }
+    return url.toString().replace(/\/$/, '');
+  } catch (e) {
+    return '/api';
+  }
+}
+
+const API_URL = resolveApiUrl();
 const SESSION_KEY = 'finanzas_session';
 
 // Solo recuerda (sin ningún secreto) que hubo un login, para no pedir /user a quien nunca entró.
@@ -32,7 +50,7 @@ export const fieldError = (error, field) => (error && error.errors && error.erro
 export const isGeneralError = (error) => Boolean(error) && Object.keys(error.errors || {}).length === 0;
 
 export async function api(path, { method = 'GET', body, params } = {}) {
-  const url = new URL(API_URL + path);
+  const url = new URL(API_URL + path, window.location.origin);
   Object.entries(params || {}).forEach(([key, value]) => {
     if (value !== '' && value !== null && value !== undefined) url.searchParams.set(key, value);
   });

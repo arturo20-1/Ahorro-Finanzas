@@ -7,16 +7,11 @@ de `backendFinanza` (Laravel), que responde siempre en JSON.
 
 ```bash
 npm install
-cp .env.example .env        # en Windows: copy .env.example .env
 npm run dev                 # http://localhost:5173
 ```
 
-El backend debe estar corriendo (`php artisan serve`, por defecto en `http://127.0.0.1:8000`).
-Si usa otra dirección, cámbiala en `.env`:
-
-```
-VITE_API_URL=http://127.0.0.1:8000/api
-```
+No hace falta ningún `.env` en desarrollo. El backend debe estar corriendo (`php artisan serve`, por defecto en
+`http://127.0.0.1:8000`); si usa otra dirección, cámbiala en `vite.config.js` (constante `BACKEND`).
 
 ## Estructura
 
@@ -34,10 +29,15 @@ src/
 
 ## Cómo habla con el backend
 
-1. El login (`POST /api/login`) devuelve un **token**; se guarda en `localStorage`.
-2. `api.js` lo manda en cada petición: `Authorization: Bearer <token>`.
-3. Si la API responde `401` (token vencido), la app cierra la sesión y vuelve al login.
-4. Si responde `422` (datos inválidos), el formulario muestra el mensaje debajo de cada campo.
+1. El login (`POST /api/login`) hace que el backend deje el token en una **cookie HttpOnly**: JavaScript no puede leerla.
+2. `api.js` usa `credentials: 'include'`, así que el navegador manda la cookie solo en cada petición.
+3. Al abrir la página, `AuthContext` pregunta `GET /api/user` y la cookie dice quién eres.
+4. Si la API responde `401` (cookie vencida), la app cierra la sesión y vuelve al login.
+5. Si responde `422` (datos inválidos), el formulario muestra el mensaje debajo de cada campo.
+
+> En desarrollo, Vite reenvía todo lo que empiece con `/api` al backend (`vite.config.js`, proxy). Así el navegador ve
+> una sola dirección (`http://localhost:5173`) y la cookie funciona sin reglas de CORS. El backend debe estar corriendo
+> en `http://127.0.0.1:8000`. En producción, sirve la API bajo el mismo dominio o define `VITE_API_URL`.
 
 ## Pantallas
 

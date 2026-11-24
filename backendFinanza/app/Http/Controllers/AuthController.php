@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Support\AuthCookie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,8 +14,8 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * Autenticación con tokens (Laravel Sanctum).
- * No usa sesión ni cookies: el cliente (React) guarda el token y lo manda en
- * la cabecera  Authorization: Bearer <token>.
+ * El token se guarda en una cookie HttpOnly (el navegador la manda sola). Las herramientas
+ * como Postman o curl también pueden usar la cabecera  Authorization: Bearer <token>.
  */
 class AuthController extends Controller
 {
@@ -28,10 +29,12 @@ class AuthController extends Controller
             'password' => $datos['password'], // se cifra solo (cast "hashed" del modelo)
         ]);
 
+        $token = $usuario->createToken('api')->plainTextToken;
+
         return response()->json([
             'user' => new UserResource($usuario),
-            'token' => $usuario->createToken('api')->plainTextToken,
-        ], 201);
+            'token' => $token, // para Postman/curl; el navegador usa la cookie
+        ], 201)->withCookie(AuthCookie::make($token));
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -47,10 +50,12 @@ class AuthController extends Controller
         // Un login nuevo revoca los tokens anteriores (así no se acumulan tokens olvidados)
         $usuario->tokens()->delete();
 
+        $token = $usuario->createToken('api')->plainTextToken;
+
         return response()->json([
             'user' => new UserResource($usuario),
-            'token' => $usuario->createToken('api')->plainTextToken,
-        ]);
+            'token' => $token, // para Postman/curl; el navegador usa la cookie
+        ])->withCookie(AuthCookie::make($token));
     }
 
     /**
@@ -66,6 +71,7 @@ class AuthController extends Controller
         // Borra solo el token con el que se hizo esta petición
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Sesión cerrada.']);
+        // Además de borrar el token, le pide al navegador que borre la cookie
+        return response()->json(['message' => 'Sesión cerrada.'])->withCookie(AuthCookie::forget());
     }
 }

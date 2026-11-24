@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { api, hasSession, markSession } from './api';
+import { ApiError, api, hasSession, markSession } from './api';
 
 const AuthContext = createContext(null);
 
@@ -26,8 +26,27 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('auth:expired', expired);
   }, []);
 
-  // El backend ya dejó el token en la cookie HttpOnly; aquí solo se guarda el usuario en pantalla
-  const enter = (res) => {
+  // El backend ya dejó el token en la cookie HttpOnly. Antes de dar la sesión por buena se comprueba que
+  // el navegador de verdad la guardó (si no, cada pantalla fallaría con 401 y te sacaría al login).
+  const enter = async (res) => {
+    try {
+      await api('/user');
+    } catch (e) {
+      if (e.status === 401) {
+        // Si la página está dentro de otra (vista previa de un editor, por ejemplo) el navegador bloquea sus cookies
+        const embedded = window.self !== window.top;
+        // El detalle técnico va a la consola (F12) para quien desarrolla; al usuario se le habla sin tecnicismos
+        console.error(`[auth] El login respondió bien pero la API no recibió la cookie de sesión. Página: ${window.location.origin} | API: ${window.location.hostname}:8000 | dentro de un iframe: ${embedded}`);
+        throw new ApiError(
+          embedded
+            ? 'Esta página está abierta dentro de otra aplicación y el navegador bloquea sus cookies. Ábrela directamente en Chrome o Edge.'
+            : 'No pudimos iniciar tu sesión. Revisa que tu navegador permita cookies e inténtalo de nuevo.',
+          401,
+          {}
+        );
+      }
+      throw e;
+    }
     markSession(true);
     setUser(res.user);
     return res.user;
